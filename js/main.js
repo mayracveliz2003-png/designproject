@@ -1,70 +1,33 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Swiss Punk — Overview</title>
-  <link rel="stylesheet" href="css/styles.css">
-  <script defer src="js/main.js"></script>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-</head>
-<body>
-  <header class="site-header">
-    <div class="container">
-      <a class="brand" href="index.html">Swiss Punk</a>
-      <nav class="site-nav">
-        <a href="index.html">Overview</a>
-        <a href="timeline.html">Timeline</a>
-        <a href="practitioners.html">Practitioners</a>
-      </nav>
-    </div>
-  </header>
+// Small interactivity: highlight current nav link
+document.addEventListener('DOMContentLoaded', function(){
+  const navLinks = document.querySelectorAll('.site-nav a');
+  const path = window.location.pathname.split('/').pop() || 'index.html';
+  navLinks.forEach(a => {
+    if(a.getAttribute('href') === path) a.classList.add('active');
+  });
+  
+  // Reveal animations for timeline items and cards (respect prefers-reduced-motion)
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const revealTargets = document.querySelectorAll('.timeline-item, .card');
 
-  <main class="container">
-    <section class="hero halftone">
-      <h1>Swiss Punk</h1>
-      <p class="lede">A tightly tuned grid that got punched in the face — Swiss clarity with a DIY sneer.</p>
-      <p>I ripped up the rulebook, kept the grid and glued it back together with photocopied tape and attitude. Swiss Punk is where crisp type meets collage, measured space meets chaos, and legibility gets gloriously messy.</p>
+  if (prefersReduced) {
+    revealTargets.forEach(el => el.classList.add('in-view'));
+    return;
+  }
 
-      <p class="zine-caption">zine note: this is not a lecture — it's a cut-and-paste manifesto.</p>
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in-view');
+          io.unobserve(entry.target);
+        }
+      });
+    }, {threshold: 0.12});
 
-      <p class="cta-row">
-        <a class="btn primary" href="timeline.html">See the timeline</a>
-        <a class="btn ghost" href="practitioners.html">Meet practitioners</a>
-      </p>
-    </section>
-
-    <section class="content-card">
-      <h2>What makes it 'Swiss' and what makes it 'Punk'?</h2>
-      <div class="two-col">
-        <div>
-          <h3>Swiss (the typographic side)</h3>
-          <p>Swiss design contributes structure: a preference for grid systems, objective typography (sans serif), and clarity of information. It values legibility and pacing.</p>
-        </div>
-        <div>
-          <h3>Punk (the attitude)</h3>
-          <p>Punk brings disruption: a DIY ethic, collage, deliberate 'mistakes', hand-made marks, and an anti-establishment tone. It embraces rawness and immediacy.</p>
-        </div>
-      </div>
-
-      <div class="callout">cut here → paste this somewhere obvious</div>
-    </section>
-
-    <section class="content-card">
-      <h2>How to use this mini-site</h2>
-      <ol>
-        <li>Read the Overview (this page) to understand the concept.</li>
-        <li>Open the Timeline to follow the historical and cultural milestones.</li>
-        <li>Meet the Practitioners to see people who've influenced or exemplified the style.</li>
-      </ol>
-    </section>
-  </main>
-
-  <footer class="site-footer">
-    <div class="container">
-      <small>Designed with bright yellow and pink accents • Sample content for demonstration.</small>
-    </div>
-  </footer>
-</body>
-</html>
+    revealTargets.forEach(el => io.observe(el));
+  } else {
+    // fallback
+    revealTargets.forEach(el => el.classList.add('in-view'));
+  }
+});
