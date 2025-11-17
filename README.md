@@ -36,3 +36,18 @@ Next steps I can do if you want:
 - Add images and thumbnails for practitioners
 - Provide sourced references and further reading links
 - Add printable timeline or downloadable one-page PDF
+
+Recent UI updates:
+
+- Added halftone overlay and tactile zine details for a photocopied, DIY feel.
+- Duotone avatar placeholders for practitioners (see `assets/avatar1.svg`, `avatar2.svg`, `avatar3.svg`).
+ - Duotone avatar placeholders for practitioners (see `assets/avatar1-portrait.svg`, `avatar2-portrait.svg`, `avatar3-portrait.svg`).
+ - Tactile assets added: `assets/tape.svg` and `assets/tear.svg` used in a sample hero collage.
+- Timeline reveal animations with reduced-motion support.
+
+To view locally (with animations):
+
+```bash
+python3 -m http.server 8000
+# open http://localhost:8000 in your browser
+```
