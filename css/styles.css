@@ -2,7 +2,7 @@
   --bg: #0f0f10;
   --card-bg: #121214;
   --text: #eaeaea;
-  --accent-yellow: #FFD400; /* bright yellow */
+  --accent-yellow: #E6BE00; /* slightly darker yellow for contrast */
   --accent-pink: #FF2D8F;   /* bright pink */
   --muted: #bdbdbd;
   --container-width: 1000px;
@@ -11,7 +11,7 @@
 html,body{height:100%}
 body{
   margin:0;
-  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
   background: linear-gradient(180deg,#0b0b0c 0%, #0f0f10 100%);
   color:var(--text);
   -webkit-font-smoothing:antialiased;
@@ -23,8 +23,10 @@ body{
 .site-nav a{color:var(--muted);text-decoration:none;margin-left:1rem;padding:0.5rem;border-radius:6px}
 .site-nav a:hover{color:var(--text);background:rgba(255,255,255,0.02)}
 
-.hero{padding:3rem 0}
-.hero h1{font-size:3rem;margin:0 0 0.25rem;color:var(--accent-pink);text-shadow:0 2px 0 rgba(0,0,0,0.6)}
+.hero{padding:3rem 0;position:relative}
+.hero.halftone{position:relative;overflow:visible}
+.hero.halftone::after{content:'';position:absolute;inset:0;z-index:0;pointer-events:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><defs><pattern id='p' width='6' height='6' patternUnits='userSpaceOnUse'><circle cx='1' cy='1' r='1' fill='black' /></pattern></defs><rect width='100%' height='100%' fill='url(%23p)' opacity='0.04'/></svg>");mix-blend-mode:overlay}
+.hero h1{font-size:3rem;margin:0 0 0.25rem;color:var(--accent-pink);text-shadow:0 2px 0 rgba(0,0,0,0.6);font-family:"Helvetica Neue","Helvetica","Nimbus Sans",Arial,sans-serif;font-weight:800;transform:translateX(-4%)}
 .lede{color:var(--accent-yellow);font-weight:600}
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:1rem}
 
@@ -37,12 +39,20 @@ body{
 
 .timeline{margin-top:1rem}
 .timeline-item{display:flex;gap:1rem;padding:1rem 0;border-top:1px dashed rgba(255,255,255,0.03)}
-.timeline-item{display:flex;gap:1rem;padding:1rem 0;border-top:1px dashed rgba(255,255,255,0.03);position:relative}
-.timeline-item .date{min-width:120px;color:var(--accent-yellow);font-weight:700;z-index:2}
-.timeline-item .body h3{color:var(--accent-pink);margin:0 0 0.25rem;z-index:2}
+.timeline-item{display:flex;gap:1rem;padding:1rem 0;border-top:1px dashed rgba(255,255,255,0.03);position:relative;z-index:2;will-change:transform,opacity}
+.timeline-item .date{min-width:120px;color:var(--accent-yellow);font-weight:700;z-index:3}
+.timeline-item .body h3{color:var(--accent-pink);margin:0 0 0.25rem;z-index:3}
 
 /* large semi-transparent year behind timeline items */
 .year-ghost{position:absolute;right:0;top:-6px;font-size:6.5rem;line-height:0.85;font-weight:800;color:var(--accent-yellow);opacity:0.06;pointer-events:none;z-index:1;transform:translateY(-6px)}
+
+/* reveal animation state */
+.timeline-item, .card{transform:translateY(12px) scale(.997);opacity:0;transition:transform .6s cubic-bezier(.2,.9,.2,1),opacity .6s ease}
+.timeline-item.in-view, .card.in-view{transform:none;opacity:1}
+
+@media (prefers-reduced-motion: reduce){
+  .timeline-item, .card{transition:none;transform:none;opacity:1}
+}
 
 /* zine captions and callouts */
 .zine-caption{display:inline-block;margin-top:0.75rem;padding:0.15rem 0.6rem;border-radius:6px;background:rgba(255,255,255,0.02);color:var(--accent-pink);font-weight:700;font-size:0.875rem}
@@ -51,6 +61,31 @@ body{
 /* small quote badge for practitioner cards */
 .card{background:var(--card-bg);padding:1rem;border-radius:8px;border-left:6px solid var(--accent-pink);position:relative}
 .card .quote{position:absolute;top:-14px;right:-12px;background:var(--accent-pink);color:#111;padding:0.4rem 0.6rem;font-weight:800;border-radius:4px;transform:rotate(-6deg);box-shadow:0 8px 20px rgba(0,0,0,0.35)}
+
+/* avatar / duotone */
+.avatar{width:96px;height:96px;border-radius:6px;background-size:cover;background-position:center;border:3px solid rgba(255,255,255,0.03);position:relative;margin-bottom:0.75rem}
+.avatar::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg, rgba(255,45,143,0.45), rgba(230,190,0,0.45));mix-blend-mode:multiply;pointer-events:none}
+.card .meta{display:flex;align-items:center;gap:0.75rem}
+.card .meta .name{font-weight:700}
+
+/* tuned per-avatar overlays (subtle, allow SVG base color to show through) */
+.avatar.jm::after{background:linear-gradient(135deg, rgba(255,45,143,0.45), rgba(230,190,0,0.25));}
+.avatar.ww::after{background:linear-gradient(135deg, rgba(230,190,0,0.55), rgba(255,45,143,0.22));}
+.avatar.ss::after{background:linear-gradient(135deg, rgba(255,45,143,0.42), rgba(230,190,0,0.42));}
+
+/* collage positioning inside hero */
+.collage{position:absolute;right:2.5rem;top:0;width:240px;height:220px;pointer-events:none;z-index:3}
+.collage .collage-img{position:absolute;width:120px;height:120px;object-fit:cover;border-radius:6px;box-shadow:0 12px 30px rgba(0,0,0,0.6);border:3px solid rgba(255,255,255,0.02)}
+.collage .a1{right:0;top:8px;transform:rotate(-6deg)}
+.collage .a2{right:56px;top:48px;transform:rotate(8deg)}
+.collage .a3{right:16px;top:92px;transform:rotate(-10deg)}
+.collage .tape{position:absolute;width:140px;right:12px;top:40px;transform:rotate(-12deg);opacity:0.95}
+.collage .t1{right:28px;top:22px}
+.collage .tear{position:absolute;width:320px;right:-40px;top:170px;transform:translateY(-8px);opacity:0.95}
+
+@media (max-width:900px){
+  .collage{display:none}
+}
 
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;margin-top:1rem}
 .card{background:var(--card-bg);padding:1rem;border-radius:8px;border-left:6px solid var(--accent-pink)}
